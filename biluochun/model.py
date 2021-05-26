@@ -32,6 +32,9 @@ class Team(db.Model):
     def __repr__(self):
         return f"<Team #{self.id} '{self.name}' repo={self.repo}>"
 
+class TeamCreation(db.Model):
+    id = db.Column(db.Integer, db.ForeignKey("team.id"), primary_key=True)
+    creation = db.Column(db.DateTime)
 
 class User(db.Model, flask_login.UserMixin):
     """

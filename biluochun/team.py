@@ -2,6 +2,7 @@
 Defines /api/team endpoints series.
 '''
 
+from datetime import datetime
 import secrets
 
 from flask import Blueprint, redirect, request, url_for
@@ -9,7 +10,7 @@ from flask.json import jsonify
 from flask_login import current_user, login_required
 
 from .form import Avatar, TeamInfo
-from .model import Image, Team, db
+from .model import Image, Team, TeamCreation, db
 from .qq import qq_verify_required
 from .util import cleanse_profile_pic, find_team_by_name, team_summary, user_summary
 from .webhook import trigger_webhook
@@ -75,6 +76,9 @@ def init_team_api(app):
                 }, 400
             # Commit the changes
             db.session.add(new_team)
+            db.session.commit()
+            creation_time = TeamCreation(id = new_team.id, creation = datetime.utcnow())
+            db.session.add(creation_time)
             db.session.commit()
             trigger_webhook(new_team, "create")
             return {}
